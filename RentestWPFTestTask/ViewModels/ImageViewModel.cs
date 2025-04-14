@@ -27,10 +27,18 @@ namespace RentestWPFTestTask.ViewModels
             set => Set(ref _hasImage, value);
         }
 
+        private bool _isFiltered;
+        public bool IsFiltered
+        {
+            get => _isFiltered;
+            set => Set(ref _isFiltered, value);
+        }
+
         public void LoadImage(BitmapImage image)
         {
             Image = image;
             HasImage = image != null;
+            IsFiltered = false;
         }
     }
 }

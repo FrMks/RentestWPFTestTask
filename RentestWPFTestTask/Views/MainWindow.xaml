@@ -38,6 +38,14 @@
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
+
+            <Button Content="Сохранить изображение"
+                Command="{Binding SaveImageCommand}"
+                Visibility="{Binding ImageViewModel.IsFiltered, Converter={StaticResource BoolToVisibilityConverter}}"
+                HorizontalAlignment="Left"
+                Padding="20 10"
+                Margin="0,0,0,10"/>
+
         </StackPanel>
 
 
