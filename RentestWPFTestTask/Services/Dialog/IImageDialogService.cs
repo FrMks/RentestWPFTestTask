@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
-namespace RentestWPFTestTask.Services
+namespace RentestWPFTestTask.Services.Dialog
 {
     internal interface IImageDialogService
     {

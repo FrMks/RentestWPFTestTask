@@ -26,12 +26,12 @@
                     Margin="0,0,0,10"/>
 
             <ComboBox x:Name="FilterComboBox"
-                      ItemsSource="{Binding AvailableFilters}"
-                      SelectedItem="{Binding SelectedFilter}"
-                      Visibility="{Binding ImageViewModel.HasImage, Converter={StaticResource BoolToVisibilityConverter}}"
-                      Width="200"
-                      HorizontalAlignment="Left"
-                      Margin="0,0,0,10">
+                ItemsSource="{Binding FilterViewModel.AvailableFilters}"
+                SelectedItem="{Binding FilterViewModel.SelectedFilter}"
+                Visibility="{Binding ImageViewModel.HasImage, Converter={StaticResource BoolToVisibilityConverter}}"
+                Width="200"
+                HorizontalAlignment="Left"
+                Margin="0,0,0,10">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Name}"/>

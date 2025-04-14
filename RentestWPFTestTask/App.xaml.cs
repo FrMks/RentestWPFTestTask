@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using RentestWPFTestTask.Services;
+using RentestWPFTestTask.Services.Dialog;
+using RentestWPFTestTask.Services.Filter;
 using RentestWPFTestTask.ViewModels;
 using RentestWPFTestTask.Views;
 using System;
@@ -21,6 +22,9 @@ namespace RentestWPFTestTask
         private void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IImageDialogService, ImageDialogService>();
+            services.AddSingleton<IFilterService, FilterService>();
+            services.AddTransient<ImageViewModel>();
+            services.AddTransient<FilterViewModel>();
             services.AddTransient<MainWindowViewModel>();
             services.AddSingleton<MainWindow>();
         }

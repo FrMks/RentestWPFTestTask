@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 
-namespace RentestWPFTestTask.Services
+namespace RentestWPFTestTask.Services.Dialog
 {
     internal class ImageDialogService : IImageDialogService
     {
