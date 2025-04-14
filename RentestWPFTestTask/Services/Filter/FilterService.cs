@@ -1,27 +1,48 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
+﻿using OpenCvSharp;
+using RentestWPFTestTask.Infrastructure.ImageConverter;
 using RentestWPFTestTask.Models;
+using System.Collections.Generic;
+using System.IO;
+using System.Windows.Media.Imaging;
 
 namespace RentestWPFTestTask.Services.Filter
 {
     internal class FilterService : IFilterService
     {
-        public void ApplyFilter(ImageFilter filter, BitmapImage sourceImage)
+        public BitmapImage ApplyFilter(ImageFilter filter, BitmapImage sourceImage)
         {
-            switch (filter.Id)
+            if (sourceImage == null) return null;
+
+            using (var mat = ImageConverter.BitmapImageToMat(sourceImage))
             {
-                case "GRAY":
-                    ApplyGrayScale(sourceImage);
-                    break;
-                case "MEDIAN":
-                    ApplyMedianFilter(sourceImage);
-                    break;
+                Mat resultMat = null;
+                try
+                {
+                    switch (filter.Id)
+                    {
+                        case "GRAY":
+                            resultMat = ApplyGrayScale(mat);
+                            break;
+                        case "MEDIAN":
+                            resultMat = ApplyMedianFilter(mat);
+                            break;
+                    }
+
+                    if (resultMat != null)
+                    {
+                        var newImage = ImageConverter.MatToBitmapImage(resultMat);
+                        return newImage;
+                    }
+                }
+                finally
+                {
+                    resultMat?.Dispose();
+                }
             }
+
+            return sourceImage;
         }
+
 
         public IEnumerable<ImageFilter> GetAvailableFilters()
         {
@@ -32,7 +53,40 @@ namespace RentestWPFTestTask.Services.Filter
             };
         }
 
-        private void ApplyGrayScale(BitmapImage image) { /* ... */ }
-        private void ApplyMedianFilter(BitmapImage image) { /* ... */ }
+        private Mat ApplyGrayScale(Mat inputImage)
+        {
+            var outputImage = new Mat();
+            Cv2.CvtColor(inputImage, outputImage, ColorConversionCodes.BGR2GRAY);
+            return outputImage;
+        }
+
+        private Mat ApplyMedianFilter(Mat inputImage)
+        {
+            var outputImage = new Mat();
+            Cv2.MedianBlur(inputImage, outputImage, 5);
+            return outputImage;
+        }
+
+        private BitmapImage UpdateBitmapImage(BitmapImage newImage)
+        {
+            var updatedImage = new BitmapImage();
+
+            using (var memoryStream = new MemoryStream())
+            {
+                var encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(newImage));
+                encoder.Save(memoryStream);
+
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                updatedImage.BeginInit();
+                updatedImage.CacheOption = BitmapCacheOption.OnLoad;
+                updatedImage.StreamSource = memoryStream;
+                updatedImage.EndInit();
+            }
+
+            return updatedImage;
+        }
+
     }
 }

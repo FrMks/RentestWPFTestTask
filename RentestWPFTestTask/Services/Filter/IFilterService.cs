@@ -11,6 +11,6 @@ namespace RentestWPFTestTask.Services.Filter
     internal interface IFilterService
     {
         IEnumerable<ImageFilter> GetAvailableFilters();
-        void ApplyFilter(ImageFilter filter, BitmapImage sourceImage);
+        BitmapImage ApplyFilter(ImageFilter filter, BitmapImage sourceImage);
     }
 }

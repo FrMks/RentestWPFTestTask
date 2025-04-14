@@ -39,8 +39,13 @@ namespace RentestWPFTestTask.ViewModels
         {
             if (_imageViewModel.HasImage)
             {
-                _filterService.ApplyFilter(SelectedFilter, _imageViewModel.Image);
+                var filteredImage = _filterService.ApplyFilter(SelectedFilter, _imageViewModel.Image);
+                if (filteredImage != null)
+                {
+                    _imageViewModel.Image = filteredImage;
+                }
             }
         }
+
     }
 }
