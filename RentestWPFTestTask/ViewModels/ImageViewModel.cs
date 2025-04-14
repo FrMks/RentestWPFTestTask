@@ -11,6 +11,9 @@ namespace RentestWPFTestTask.ViewModels
     internal class ImageViewModel : ViewModel
     {
         private BitmapImage _image;
+        /// <summary>
+        /// Храним выбранное изображение
+        /// </summary>
         public BitmapImage Image
         {
             get => _image;

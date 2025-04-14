@@ -18,13 +18,28 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Button Content="Выбор изображения"
-                Command="{Binding OpenImageCommand}"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Margin="10"
-                Padding="20 10"
-                Grid.Column="0"/>
+        <StackPanel Grid.Column="0" Orientation="Vertical" Margin="10">
+            <Button Content="Выбор изображения"
+                    Command="{Binding OpenImageCommand}"
+                    HorizontalAlignment="Left"
+                    Padding="20 10"
+                    Margin="0,0,0,10"/>
+
+            <ComboBox x:Name="FilterComboBox"
+                      ItemsSource="{Binding AvailableFilters}"
+                      SelectedItem="{Binding SelectedFilter}"
+                      Visibility="{Binding ImageViewModel.HasImage, Converter={StaticResource BoolToVisibilityConverter}}"
+                      Width="200"
+                      HorizontalAlignment="Left"
+                      Margin="0,0,0,10">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </StackPanel>
+
 
         <GridSplitter Grid.Column="1"
                      Width="3"
