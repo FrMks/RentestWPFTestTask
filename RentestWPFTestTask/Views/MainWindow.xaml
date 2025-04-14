@@ -3,19 +3,45 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:vm="clr-namespace:RentestWPFTestTask.ViewModels"
-        xmlns:local="clr-namespace:RentestWPFTestTask"
+        xmlns:converters="clr-namespace:RentestWPFTestTask.Converters"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Window.DataContext>
-        <vm:MainWindowViewModel/>
-    </Window.DataContext>
-    <DockPanel>
+        Title="Image Viewer" Height="450" Width="800">
+
+    <Window.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
         <Button Content="Выбор изображения"
                 Command="{Binding OpenImageCommand}"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Margin="10"
                 Padding="20 10"
-                DockPanel.Dock="Top"/>
-    </DockPanel>
+                Grid.Column="0"/>
+
+        <GridSplitter Grid.Column="1"
+                     Width="3"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Stretch"
+                     Background="Gray"
+                     Visibility="{Binding ImageViewModel.HasImage, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+        <Border Grid.Column="2"
+                BorderBrush="LightGray"
+                BorderThickness="1"
+                Margin="5"
+                Visibility="{Binding ImageViewModel.HasImage, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Image Source="{Binding ImageViewModel.Image}"
+                   Stretch="Uniform"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"/>
+        </Border>
+    </Grid>
 </Window>

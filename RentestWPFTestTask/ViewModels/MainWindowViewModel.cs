@@ -1,35 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using Microsoft.Win32;
+using System.Windows.Input;
 using RentestWPFTestTask.Infrastructure.Commands;
 using RentestWPFTestTask.ViewModels.Baze;
+using RentestWPFTestTask.Services;
 
 namespace RentestWPFTestTask.ViewModels
 {
     internal class MainWindowViewModel : ViewModel
     {
+        private readonly IImageDialogService _imageDialogService;
+        public ImageViewModel ImageViewModel { get; }
+
         public ICommand OpenImageCommand { get; }
-        private bool CanOpenImageCommandExecute(object p) => true;
-        private void OnOpenImageCommandExecute(object p)
+
+        public MainWindowViewModel(IImageDialogService imageDialogService)
         {
-            var openFileDialog = new OpenFileDialog
-            {
-                Filter = "Image files (*.png;*.jpeg;*.jpg;*.bmp)|*.png;*.jpeg;*.jpg;*.bmp|All files (*.*)|*.*",
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)
-            };
-            if (openFileDialog.ShowDialog()  == true)
-            {
-                string selectedImagePath = openFileDialog.FileName;
-            }
+            _imageDialogService = imageDialogService;
+            ImageViewModel = new ImageViewModel();
+
+            OpenImageCommand = new LambdaCommand(OpenImage);
         }
 
-        public MainWindowViewModel()
+        private void OpenImage(object parameter)
         {
-            OpenImageCommand = new LambdaCommand(OnOpenImageCommandExecute, CanOpenImageCommandExecute);
+            var image = _imageDialogService.OpenImage();
+            ImageViewModel.LoadImage(image);
         }
     }
 }
