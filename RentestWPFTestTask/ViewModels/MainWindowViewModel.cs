@@ -7,60 +7,37 @@ using RentestWPFTestTask.ViewModels.Baze;
 using RentestWPFTestTask.Services.Dialog;
 using RentestWPFTestTask.Services.Filter;
 using System.IO;
+using RentestWPFTestTask.Services.SaveImage;
 
 namespace RentestWPFTestTask.ViewModels
 {
     internal class MainWindowViewModel : ViewModel
     {
         private readonly IImageDialogService _imageDialogService;
+        private readonly IImageSaveService _imageSaveService;
         public ImageViewModel ImageViewModel { get; }
         public FilterViewModel FilterViewModel { get; }
         public ICommand OpenImageCommand { get; }
         public ICommand SaveImageCommand { get; }
 
-        public MainWindowViewModel(IImageDialogService imageDialogService,
-    IFilterService filterService,
-    ImageViewModel imageViewModel)
+        public MainWindowViewModel(
+            IImageDialogService imageDialogService,
+            IFilterService filterService,
+            IImageSaveService imageSaveService,
+            ImageViewModel imageViewModel)
         {
             _imageDialogService = imageDialogService;
+            _imageSaveService = imageSaveService;
             ImageViewModel = imageViewModel;
             FilterViewModel = new FilterViewModel(filterService, imageViewModel);
+
             OpenImageCommand = new LambdaCommand(OpenImage);
             SaveImageCommand = new LambdaCommand(SaveImage, CanSaveImage);
         }
 
         private void SaveImage(object parameter)
         {
-            var dialog = new SaveFileDialog
-            {
-                Title = "Сохранить изображение",
-                Filter = "PNG (*.png)|*.png|JPEG (*.jpg)|*.jpg|BMP (*.bmp)|*.bmp",
-                FileName = "filtered_image"
-            };
-
-            if (dialog.ShowDialog() == true)
-            {
-                using (var fileStream = new FileStream(dialog.FileName, FileMode.Create))
-                {
-                    BitmapEncoder encoder;
-
-                    switch (Path.GetExtension(dialog.FileName).ToLower())
-                    {
-                        case ".jpg":
-                            encoder = new JpegBitmapEncoder();
-                            break;
-                        case ".bmp":
-                            encoder = new BmpBitmapEncoder();
-                            break;
-                        default:
-                            encoder = new PngBitmapEncoder();
-                            break;
-                    }
-
-                    encoder.Frames.Add(BitmapFrame.Create(ImageViewModel.Image));
-                    encoder.Save(fileStream);
-                }
-            }
+            _imageSaveService.SaveImage(ImageViewModel.Image);
         }
 
         private bool CanSaveImage(object parameter) => ImageViewModel.IsFiltered;
