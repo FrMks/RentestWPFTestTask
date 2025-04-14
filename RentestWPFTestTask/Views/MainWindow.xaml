@@ -1,0 +1,70 @@
+﻿<Window x:Class="RentestWPFTestTask.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converters="clr-namespace:RentestWPFTestTask.Converters"
+        mc:Ignorable="d"
+        Title="Image Viewer" Height="450" Width="800">
+
+    <Window.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0" Orientation="Vertical" Margin="10">
+            <Button Content="Выбор изображения"
+                    Command="{Binding OpenImageCommand}"
+                    HorizontalAlignment="Left"
+                    Padding="20 10"
+                    Margin="0,0,0,10"/>
+
+            <ComboBox x:Name="FilterComboBox"
+                ItemsSource="{Binding FilterViewModel.AvailableFilters}"
+                SelectedItem="{Binding FilterViewModel.SelectedFilter}"
+                Visibility="{Binding ImageViewModel.HasImage, Converter={StaticResource BoolToVisibilityConverter}}"
+                Width="200"
+                HorizontalAlignment="Left"
+                Margin="0,0,0,10">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+
+            <Button Content="Сохранить изображение"
+                Command="{Binding SaveImageCommand}"
+                Visibility="{Binding ImageViewModel.IsFiltered, Converter={StaticResource BoolToVisibilityConverter}}"
+                HorizontalAlignment="Left"
+                Padding="20 10"
+                Margin="0,0,0,10"/>
+
+        </StackPanel>
+
+
+        <GridSplitter Grid.Column="1"
+                     Width="3"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Stretch"
+                     Background="Gray"
+                     Visibility="{Binding ImageViewModel.HasImage, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+        <Border Grid.Column="2"
+                BorderBrush="LightGray"
+                BorderThickness="1"
+                Margin="5"
+                Visibility="{Binding ImageViewModel.HasImage, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Image Source="{Binding ImageViewModel.Image}"
+                   Stretch="Uniform"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"/>
+        </Border>
+    </Grid>
+</Window>
