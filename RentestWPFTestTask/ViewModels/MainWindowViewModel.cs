@@ -1,13 +1,9 @@
-﻿using System;
-using System.Windows.Media.Imaging;
-using Microsoft.Win32;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using RentestWPFTestTask.Infrastructure.Commands;
 using RentestWPFTestTask.ViewModels.Baze;
-using RentestWPFTestTask.Services.Dialog;
 using RentestWPFTestTask.Services.Filter;
-using System.IO;
 using RentestWPFTestTask.Services.SaveImage;
+using RentestWPFTestTask.Services;
 
 namespace RentestWPFTestTask.ViewModels
 {
@@ -35,16 +31,16 @@ namespace RentestWPFTestTask.ViewModels
             SaveImageCommand = new LambdaCommand(SaveImage, CanSaveImage);
         }
 
-        private void SaveImage(object parameter)
+        private async void SaveImage(object parameter)
         {
-            _imageSaveService.SaveImage(ImageViewModel.Image);
+            await _imageSaveService.SaveImageAsync(ImageViewModel.Image);
         }
 
         private bool CanSaveImage(object parameter) => ImageViewModel.IsFiltered;
 
-        private void OpenImage(object parameter)
+        private async void OpenImage(object parameter)
         {
-            var image = _imageDialogService.OpenImage();
+            var image = await _imageDialogService.OpenImageAsync();
             ImageViewModel.LoadImage(image);
         }
     }

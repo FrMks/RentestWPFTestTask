@@ -1,5 +1,4 @@
 ﻿using OpenCvSharp;
-using System.IO;
 
 namespace RentestWPFTestTask.Infrastructure.Extensions
 {

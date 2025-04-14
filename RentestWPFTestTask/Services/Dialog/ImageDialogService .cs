@@ -10,7 +10,7 @@ namespace RentestWPFTestTask.Services.Dialog
 {
     internal class ImageDialogService : IImageDialogService
     {
-        public BitmapImage OpenImage()
+        public async Task<BitmapImage> OpenImageAsync()
         {
             var openFileDialog = new OpenFileDialog
             {

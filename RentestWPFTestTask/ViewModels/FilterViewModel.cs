@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RentestWPFTestTask.Models;
+﻿using RentestWPFTestTask.Models;
 using RentestWPFTestTask.Services.Filter;
 using RentestWPFTestTask.ViewModels.Baze;
 
@@ -28,23 +23,22 @@ namespace RentestWPFTestTask.ViewModels
         }
 
         public IEnumerable<ImageFilter> AvailableFilters { get; }
-        public FilterViewModel(IFilterService filterService, ImageViewModel imageViewModel)
+        public FilterViewModel(IFilterService filterService,
+                            ImageViewModel imageViewModel)
         {
             _filterService = filterService;
             _imageViewModel = imageViewModel;
             AvailableFilters = _filterService.GetAvailableFilters();
         }
 
-        private void ApplyFilter()
+        private async void ApplyFilter()
         {
             if (_imageViewModel.HasImage)
             {
-                var filtered = _filterService.ApplyFilter(SelectedFilter, _imageViewModel.Image);
+                var filtered = await _filterService.ApplyFilterAsync(SelectedFilter, _imageViewModel.Image);
                 _imageViewModel.Image = filtered;
                 _imageViewModel.IsFiltered = true;
             }
         }
-
-
     }
 }

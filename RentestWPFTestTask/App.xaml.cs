@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using RentestWPFTestTask.Services;
 using RentestWPFTestTask.Services.Dialog;
 using RentestWPFTestTask.Services.Filter;
 using RentestWPFTestTask.Services.SaveImage;
 using RentestWPFTestTask.ViewModels;
 using RentestWPFTestTask.Views;
-using System;
 using System.Windows;
 
 namespace RentestWPFTestTask

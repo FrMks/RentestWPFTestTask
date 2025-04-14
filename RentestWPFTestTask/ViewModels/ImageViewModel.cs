@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
+﻿using System.Windows.Media.Imaging;
 using RentestWPFTestTask.ViewModels.Baze;
 
 namespace RentestWPFTestTask.ViewModels
@@ -11,9 +6,6 @@ namespace RentestWPFTestTask.ViewModels
     internal class ImageViewModel : ViewModel
     {
         private BitmapImage _image;
-        /// <summary>
-        /// Храним выбранное изображение
-        /// </summary>
         public BitmapImage Image
         {
             get => _image;

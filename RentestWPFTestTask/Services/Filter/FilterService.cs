@@ -9,7 +9,7 @@ namespace RentestWPFTestTask.Services.Filter
 {
     internal class FilterService : IFilterService
     {
-        public BitmapImage ApplyFilter(ImageFilter filter, BitmapImage sourceImage)
+        public async Task<BitmapImage> ApplyFilterAsync(ImageFilter filter, BitmapImage sourceImage)
         {
             if (sourceImage == null) return null;
 
@@ -66,27 +66,5 @@ namespace RentestWPFTestTask.Services.Filter
             Cv2.MedianBlur(inputImage, outputImage, 5);
             return outputImage;
         }
-
-        private BitmapImage UpdateBitmapImage(BitmapImage newImage)
-        {
-            var updatedImage = new BitmapImage();
-
-            using (var memoryStream = new MemoryStream())
-            {
-                var encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(newImage));
-                encoder.Save(memoryStream);
-
-                memoryStream.Seek(0, SeekOrigin.Begin);
-
-                updatedImage.BeginInit();
-                updatedImage.CacheOption = BitmapCacheOption.OnLoad;
-                updatedImage.StreamSource = memoryStream;
-                updatedImage.EndInit();
-            }
-
-            return updatedImage;
-        }
-
     }
 }

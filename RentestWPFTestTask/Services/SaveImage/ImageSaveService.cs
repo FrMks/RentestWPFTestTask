@@ -11,7 +11,7 @@ namespace RentestWPFTestTask.Services.SaveImage
 {
     internal class ImageSaveService : IImageSaveService
     {
-        public void SaveImage(BitmapImage image)
+        public async Task SaveImageAsync(BitmapImage image)
         {
             var dialog = new SaveFileDialog
             {

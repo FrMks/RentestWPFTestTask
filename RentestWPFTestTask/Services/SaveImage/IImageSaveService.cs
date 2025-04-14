@@ -9,6 +9,6 @@ namespace RentestWPFTestTask.Services.SaveImage
 {
     internal interface IImageSaveService
     {
-        void SaveImage(BitmapImage image);
+        Task SaveImageAsync(BitmapImage image);
     }
 }
