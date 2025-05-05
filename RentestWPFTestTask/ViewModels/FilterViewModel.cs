@@ -1,7 +1,9 @@
-﻿using System.Windows.Media.Imaging;
-using RentestWPFTestTask.Models;
+﻿using RentestWPFTestTask.Models;
 using RentestWPFTestTask.Services.Filter;
 using RentestWPFTestTask.ViewModels.Baze;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace RentestWPFTestTask.ViewModels
 {
@@ -14,7 +16,7 @@ namespace RentestWPFTestTask.ViewModels
         public ImageFilter SelectedFilter
         {
             get => _selectedFilter;
-            set 
+            set
             {
                 if (Set(ref _selectedFilter, value) && value != null)
                 {
@@ -24,13 +26,14 @@ namespace RentestWPFTestTask.ViewModels
         }
 
         public IEnumerable<ImageFilter> AvailableFilters { get; }
+
         public FilterViewModel(IFilterService filterService,
-                            ImageViewModel imageViewModel)
+                               ImageViewModel imageViewModel)
         {
             _filterService = filterService;
             _imageViewModel = imageViewModel;
             AvailableFilters = _filterService.GetAvailableFilters();
-            
+
             SelectedFilter = AvailableFilters.FirstOrDefault(f => f.Id == "none");
         }
 
@@ -40,30 +43,29 @@ namespace RentestWPFTestTask.ViewModels
             {
                 if (SelectedFilter.Id == "none")
                 {
-                    _imageViewModel.Image = _imageViewModel.OriginalImage;
+                    using (var mat = Infrastructure.ImageConverter.ImageConverter.FilePathToMat(_imageViewModel.FilePath))
+                    {
+                        _imageViewModel.Image = Infrastructure.ImageConverter.ImageConverter.MatToBitmapImage(mat);
+                    }
                     _imageViewModel.IsFiltered = false;
                 }
                 else
                 {
-                    _imageViewModel.Image = _imageViewModel.OriginalImage;
-                    
-                    var filtered = await _filterService.ApplyFilterAsync(SelectedFilter, _imageViewModel.Image);
+                    var filtered = await _filterService.ApplyFilterAsync(SelectedFilter, _imageViewModel.FilePath);
                     _imageViewModel.Image = filtered;
                     _imageViewModel.IsFiltered = true;
                 }
             }
         }
 
-        public async Task ApplyGrayScaleOnLoadAsync(BitmapImage image)
+        public async Task ApplyFilterAsync(ImageFilter filter, string filePath)
         {
-            if (image == null)
+            if (string.IsNullOrEmpty(filePath))
                 return;
 
-            var filtered = await _filterService.ApplyFilterAsync
-                (new ImageFilter("GrayScale", "GRAY"), image);
+            var filtered = await _filterService.ApplyFilterAsync(filter, filePath);
             _imageViewModel.Image = filtered;
             _imageViewModel.IsFiltered = true;
         }
-
     }
 }

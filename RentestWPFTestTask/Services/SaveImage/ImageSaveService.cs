@@ -1,36 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.Win32;
+using OpenCvSharp;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
-using Microsoft.Win32;
 
 namespace RentestWPFTestTask.Services.SaveImage
 {
     internal class ImageSaveService : IImageSaveService
     {
-        public async Task SaveImageAsync(BitmapImage image)
+        public async Task SaveImageAsync(Mat mat, string defaultFileName = "filtered_image")
         {
             var dialog = new SaveFileDialog
             {
                 Title = "Сохранить изображение",
-                Filter = "PNG (*.png)|*.png|JPEG (*.jpg)|*.jpg|BMP (*.bmp)|*.bmp|TIFF (*.tif, *.tiff)|*.tif;*.tiff",
-                FileName = "filtered_image"
+                Filter = "PNG (*.png)|*.png|JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|BMP (*.bmp)|*.bmp|TIFF (*.tif;*.tiff)|*.tif;*.tiff",
+                FileName = defaultFileName
             };
+
             if (dialog.ShowDialog() == true)
             {
-                using var fileStream = new FileStream(dialog.FileName, FileMode.Create);
-                BitmapEncoder encoder = dialog.FilterIndex switch
+                string ext = Path.GetExtension(dialog.FileName).ToLower();
+
+                string format = ext switch
                 {
-                    2 => new JpegBitmapEncoder(),
-                    3 => new BmpBitmapEncoder(),
-                    _ => new PngBitmapEncoder()
+                    ".jpg" or ".jpeg" => ".jpg",
+                    ".png" => ".png",
+                    ".bmp" => ".bmp",
+                    ".tif" or ".tiff" => ".tiff",
+                    _ => ".png"
                 };
 
-                encoder.Frames.Add(BitmapFrame.Create(image));
-                encoder.Save(fileStream);
+                byte[] imageBytes = mat.ImEncode(format);
+
+                await File.WriteAllBytesAsync(dialog.FileName, imageBytes);
             }
         }
     }

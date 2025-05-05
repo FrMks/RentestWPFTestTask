@@ -10,7 +10,7 @@ namespace RentestWPFTestTask.Services.Dialog
 {
     internal class ImageDialogService : IImageDialogService
     {
-        public async Task<BitmapImage> OpenImageAsync()
+        public async Task<string> OpenImageAsync()
         {
             var openFileDialog = new OpenFileDialog
             {
@@ -18,18 +18,8 @@ namespace RentestWPFTestTask.Services.Dialog
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)
             };
 
-
             if (openFileDialog.ShowDialog() == true)
-            {
-                try
-                {
-                    return new BitmapImage(new Uri(openFileDialog.FileName));
-                }
-                catch
-                {
-                    return null;
-                }
-            }
+                return openFileDialog.FileName;
             return null;
         }
     }

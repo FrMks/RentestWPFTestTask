@@ -1,6 +1,4 @@
-﻿
-using System.IO;
-using System.Windows.Media;
+﻿using System.IO;
 using System.Windows.Media.Imaging;
 using OpenCvSharp;
 
@@ -8,28 +6,30 @@ namespace RentestWPFTestTask.Infrastructure.ImageConverter
 {
     internal class ImageConverter
     {
-        public static Mat BitmapImageToMat(BitmapImage bitmapImage)
+        public static Mat FilePathToMat(string filePath)
         {
-            using (MemoryStream stream = new MemoryStream())
-            {
-                BitmapEncoder encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(bitmapImage));
-                encoder.Save(stream);
-
-                var bytes = stream.ToArray();
-
-                var mat = Cv2.ImDecode(bytes, ImreadModes.Unchanged);
-                Console.WriteLine($"BitmapImageToMat: Mat type: {mat.Type()}, mat channelsL {mat.Channels()}");
-                return mat;
-            }
+            var mat = Cv2.ImRead(filePath, ImreadModes.Unchanged);
+            if (mat.Empty())
+                throw new IOException("failed to load image through OpenCV ImRead");
+            Console.WriteLine($"Image format: {mat.Type()}");
+            return mat;
         }
 
-        public static BitmapImage MatToBitmapImage(Mat mat, string format = ".png")
+
+        public static BitmapImage MatToBitmapImage(Mat mat)
         {
+            Mat displayMat = mat;
+            if (mat.Type() == MatType.CV_16UC1)
+            {
+                displayMat = new Mat();
+                Cv2.Normalize(mat, displayMat, 0, 255, NormTypes.MinMax);
+                displayMat.ConvertTo(displayMat, MatType.CV_8UC1);
+            }
+
             var image = new BitmapImage();
             using (var stream = new MemoryStream())
             {
-                var imageBytes = mat.ImEncode(format);
+                var imageBytes = displayMat.ImEncode(".png");
                 stream.Write(imageBytes, 0, imageBytes.Length);
                 stream.Position = 0;
 
@@ -39,8 +39,10 @@ namespace RentestWPFTestTask.Infrastructure.ImageConverter
                 image.EndInit();
                 image.Freeze();
             }
-            
-            Console.WriteLine("MatToBitmapImage: The conversion is completed");
+
+            if (displayMat != mat)
+                displayMat.Dispose();
+
             return image;
         }
     }

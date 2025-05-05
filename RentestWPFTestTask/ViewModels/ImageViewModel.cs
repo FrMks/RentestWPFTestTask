@@ -1,21 +1,18 @@
 ﻿using System.Windows.Media.Imaging;
 using OpenCvSharp;
-using RentestWPFTestTask.Infrastructure.ImageConverter;
-using RentestWPFTestTask.Services.Filter;
 using RentestWPFTestTask.ViewModels.Baze;
 
 namespace RentestWPFTestTask.ViewModels
 {
     internal class ImageViewModel : ViewModel
     {
-        private BitmapImage _originalImage;
-        public BitmapImage OriginalImage
+        private string _filePath;
+        public string FilePath
         {
-            get => _originalImage;
-            set => Set(ref _originalImage, value);
+            get => _filePath;
+            set => Set(ref _filePath, value);
         }
-        
-        
+
         private BitmapImage _image;
         public BitmapImage Image
         {
@@ -36,13 +33,23 @@ namespace RentestWPFTestTask.ViewModels
             get => _isFiltered;
             set => Set(ref _isFiltered, value);
         }
-
         
-        public void LoadImage(BitmapImage image)
-        { 
-            OriginalImage = image;
-            Image = image;
-            HasImage = image != null;
+        private Mat _currentMat;
+        public Mat CurrentMat
+        {
+            get => _currentMat;
+            set => Set(ref _currentMat, value);
+        }
+
+
+        public void LoadImage(string filePath)
+        {
+            FilePath = filePath;
+            CurrentMat?.Dispose();
+            CurrentMat = Infrastructure.ImageConverter.ImageConverter.FilePathToMat(filePath);
+            Image = Infrastructure.ImageConverter.ImageConverter.MatToBitmapImage(CurrentMat);
+
+            HasImage = true;
             IsFiltered = false;
         }
     }

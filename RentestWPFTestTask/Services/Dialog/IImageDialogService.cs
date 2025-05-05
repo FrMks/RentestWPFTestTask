@@ -9,6 +9,6 @@ namespace RentestWPFTestTask.Services
 {
     internal interface IImageDialogService
     {
-        Task<BitmapImage> OpenImageAsync();
+        Task<string> OpenImageAsync();
     }
 }

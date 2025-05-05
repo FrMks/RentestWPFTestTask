@@ -1,9 +1,11 @@
-﻿using System.Windows.Input;
+﻿using System.Linq;
+using System.Windows.Input;
 using RentestWPFTestTask.Infrastructure.Commands;
-using RentestWPFTestTask.ViewModels.Baze;
+using RentestWPFTestTask.Models;
 using RentestWPFTestTask.Services.Filter;
 using RentestWPFTestTask.Services.SaveImage;
 using RentestWPFTestTask.Services;
+using RentestWPFTestTask.ViewModels.Baze;
 
 namespace RentestWPFTestTask.ViewModels
 {
@@ -33,21 +35,20 @@ namespace RentestWPFTestTask.ViewModels
 
         private async void SaveImage(object parameter)
         {
-            await _imageSaveService.SaveImageAsync(ImageViewModel.Image);
+            await _imageSaveService.SaveImageAsync(ImageViewModel.CurrentMat, "filtered_image");
         }
 
         private bool CanSaveImage(object parameter) => ImageViewModel.IsFiltered;
 
         private async void OpenImage(object parameter)
         {
-            var image = await _imageDialogService.OpenImageAsync();
-            if (image != null)
+            var filePath = await _imageDialogService.OpenImageAsync(); // теперь filePath - string
+            if (!string.IsNullOrEmpty(filePath))
             {
-                ImageViewModel.LoadImage(image);
-                await FilterViewModel.ApplyGrayScaleOnLoadAsync(image);
+                ImageViewModel.LoadImage(filePath);
+                await FilterViewModel.ApplyFilterAsync(new ImageFilter("Оттенки серого", "GRAY"), filePath);
                 FilterViewModel.SelectedFilter = FilterViewModel.AvailableFilters.FirstOrDefault(f => f.Id == "none");
             }
         }
-
     }
 }
