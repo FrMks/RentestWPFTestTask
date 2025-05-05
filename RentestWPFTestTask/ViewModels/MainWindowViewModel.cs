@@ -41,7 +41,13 @@ namespace RentestWPFTestTask.ViewModels
         private async void OpenImage(object parameter)
         {
             var image = await _imageDialogService.OpenImageAsync();
-            ImageViewModel.LoadImage(image);
+            if (image != null)
+            {
+                ImageViewModel.LoadImage(image);
+                await FilterViewModel.ApplyGrayScaleOnLoadAsync(image);
+                FilterViewModel.SelectedFilter = FilterViewModel.AvailableFilters.FirstOrDefault(f => f.Id == "none");
+            }
         }
+
     }
 }

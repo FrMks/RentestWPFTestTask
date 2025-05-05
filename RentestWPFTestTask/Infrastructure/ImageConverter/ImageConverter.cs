@@ -1,5 +1,6 @@
 ﻿
 using System.IO;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using OpenCvSharp;
 
@@ -11,19 +12,24 @@ namespace RentestWPFTestTask.Infrastructure.ImageConverter
         {
             using (MemoryStream stream = new MemoryStream())
             {
-                BitmapEncoder encoder = new BmpBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(bitmapImage)); 
+                BitmapEncoder encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(bitmapImage));
                 encoder.Save(stream);
-                return Cv2.ImDecode(stream.ToArray(), ImreadModes.Color);
+
+                var bytes = stream.ToArray();
+
+                var mat = Cv2.ImDecode(bytes, ImreadModes.Unchanged);
+                Console.WriteLine($"BitmapImageToMat: Mat type: {mat.Type()}, mat channelsL {mat.Channels()}");
+                return mat;
             }
         }
 
-        public static BitmapImage MatToBitmapImage(Mat mat)
+        public static BitmapImage MatToBitmapImage(Mat mat, string format = ".png")
         {
             var image = new BitmapImage();
             using (var stream = new MemoryStream())
             {
-                var imageBytes = mat.ImEncode(".png");
+                var imageBytes = mat.ImEncode(format);
                 stream.Write(imageBytes, 0, imageBytes.Length);
                 stream.Position = 0;
 
@@ -33,6 +39,8 @@ namespace RentestWPFTestTask.Infrastructure.ImageConverter
                 image.EndInit();
                 image.Freeze();
             }
+            
+            Console.WriteLine("MatToBitmapImage: The conversion is completed");
             return image;
         }
     }

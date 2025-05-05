@@ -1,4 +1,5 @@
-﻿using RentestWPFTestTask.Models;
+﻿using System.Windows.Media.Imaging;
+using RentestWPFTestTask.Models;
 using RentestWPFTestTask.Services.Filter;
 using RentestWPFTestTask.ViewModels.Baze;
 
@@ -29,16 +30,40 @@ namespace RentestWPFTestTask.ViewModels
             _filterService = filterService;
             _imageViewModel = imageViewModel;
             AvailableFilters = _filterService.GetAvailableFilters();
+            
+            SelectedFilter = AvailableFilters.FirstOrDefault(f => f.Id == "none");
         }
 
         private async void ApplyFilter()
         {
             if (_imageViewModel.HasImage)
             {
-                var filtered = await _filterService.ApplyFilterAsync(SelectedFilter, _imageViewModel.Image);
-                _imageViewModel.Image = filtered;
-                _imageViewModel.IsFiltered = true;
+                if (SelectedFilter.Id == "none")
+                {
+                    _imageViewModel.Image = _imageViewModel.OriginalImage;
+                    _imageViewModel.IsFiltered = false;
+                }
+                else
+                {
+                    _imageViewModel.Image = _imageViewModel.OriginalImage;
+                    
+                    var filtered = await _filterService.ApplyFilterAsync(SelectedFilter, _imageViewModel.Image);
+                    _imageViewModel.Image = filtered;
+                    _imageViewModel.IsFiltered = true;
+                }
             }
         }
+
+        public async Task ApplyGrayScaleOnLoadAsync(BitmapImage image)
+        {
+            if (image == null)
+                return;
+
+            var filtered = await _filterService.ApplyFilterAsync
+                (new ImageFilter("GrayScale", "GRAY"), image);
+            _imageViewModel.Image = filtered;
+            _imageViewModel.IsFiltered = true;
+        }
+
     }
 }

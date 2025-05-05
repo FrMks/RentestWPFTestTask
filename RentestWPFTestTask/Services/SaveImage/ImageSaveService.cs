@@ -16,7 +16,7 @@ namespace RentestWPFTestTask.Services.SaveImage
             var dialog = new SaveFileDialog
             {
                 Title = "Сохранить изображение",
-                Filter = "PNG (*.png)|*.png|JPEG (*.jpg)|*.jpg|BMP (*.bmp)|*.bmp",
+                Filter = "PNG (*.png)|*.png|JPEG (*.jpg)|*.jpg|BMP (*.bmp)|*.bmp|TIFF (*.tif, *.tiff)|*.tif;*.tiff",
                 FileName = "filtered_image"
             };
             if (dialog.ShowDialog() == true)

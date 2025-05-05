@@ -26,11 +26,16 @@ namespace RentestWPFTestTask.Services.Filter
                         case "MEDIAN":
                             resultMat = ApplyMedianFilter(mat);
                             break;
+                        case "SOBEL":
+                            resultMat = ApplySobelFilter(mat);
+                            break;
+                        case "none":
+                            return sourceImage;
                     }
 
                     if (resultMat != null)
                     {
-                        var newImage = ImageConverter.MatToBitmapImage(resultMat);
+                        var newImage = ImageConverter.MatToBitmapImage(resultMat, ".tiff");
                         return newImage;
                     }
                 }
@@ -48,8 +53,9 @@ namespace RentestWPFTestTask.Services.Filter
         {
             return new List<ImageFilter>
             {
-                new ImageFilter("GrayScale", "GRAY"),
-                new ImageFilter("Медианный фильтр", "MEDIAN")
+                new ImageFilter("Медианный фильтр", "MEDIAN"),
+                new ImageFilter("Без фильтра", "none"),
+                new ImageFilter("Собель фильтр", "SOBEL")
             };
         }
 
@@ -62,8 +68,33 @@ namespace RentestWPFTestTask.Services.Filter
 
         private Mat ApplyMedianFilter(Mat inputImage)
         {
+            Mat matForFilter = ApplyGrayScale(inputImage);
+            Console.WriteLine("ApplyMedianFilter: Apply grayscale");
+            
             var outputImage = new Mat();
-            Cv2.MedianBlur(inputImage, outputImage, 5);
+            Cv2.MedianBlur(matForFilter, outputImage, 21);
+            return outputImage;
+        }
+        
+        private Mat ApplySobelFilter(Mat inputImage)
+        {
+            Mat matForFilter = ApplyGrayScale(inputImage);
+            Console.WriteLine("ApplyMedianFilter: Apply grayscale");
+
+            // Матрицы для градиентов по X и Y
+            Mat gradX = new Mat();
+            Mat gradY = new Mat();
+            
+            Cv2.Sobel(matForFilter, gradX, MatType.CV_16S, 1, 0, ksize: 3);
+            Cv2.Sobel(matForFilter, gradY, MatType.CV_16S, 0, 1, ksize: 3);
+            
+            Mat absGradX = new Mat();
+            Mat absGradY = new Mat();
+            Cv2.ConvertScaleAbs(gradX, absGradX);
+            Cv2.ConvertScaleAbs(gradY, absGradY);
+            
+            Mat outputImage = new Mat();
+            Cv2.AddWeighted(absGradX, 0.5, absGradY, 0.5, 0, outputImage);
             return outputImage;
         }
     }

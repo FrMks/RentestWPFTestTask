@@ -14,9 +14,10 @@ namespace RentestWPFTestTask.Services.Dialog
         {
             var openFileDialog = new OpenFileDialog
             {
-                Filter = "Image files (*.png;*.jpeg;*.jpg;*.bmp)|*.png;*.jpeg;*.jpg;*.bmp|All files (*.*)|*.*",
+                Filter = "Image files (*.png;*.jpeg;*.jpg;*.bmp;*.tif;*.tiff)|*.png;*.jpeg;*.jpg;*.bmp;*.tif;*.tiff|All files (*.*)|*.*",
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)
             };
+
 
             if (openFileDialog.ShowDialog() == true)
             {

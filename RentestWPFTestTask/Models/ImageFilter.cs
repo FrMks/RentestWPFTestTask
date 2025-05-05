@@ -16,7 +16,5 @@ namespace RentestWPFTestTask.Models
             Name = name;
             Id = id;
         }
-
-        public override string ToString() => Name;
     }
 }
