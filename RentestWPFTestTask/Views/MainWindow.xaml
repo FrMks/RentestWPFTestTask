@@ -9,7 +9,7 @@
 
     <Window.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <Style x:Key="BlackAndWhite">
+        <Style TargetType="Button">
             <Setter Property="Control.FontFamily" Value="Verdana"/>
             <Setter Property="Control.Background" Value="Black"/>
             <Setter Property="Control.Foreground" Value="White"/>
@@ -33,8 +33,7 @@
             <!--         Margin="0,0,0,10"/> -->
             
             <Button x:Name="button1" Content="Выбор изображения"
-                    Command="{Binding OpenImageCommand}"
-                    Style="{StaticResource BlackAndWhite}" />
+                    Command="{Binding OpenImageCommand}"/>
 
             <ComboBox x:Name="FilterComboBox"
                 ItemsSource="{Binding FilterViewModel.AvailableFilters}"
@@ -53,8 +52,7 @@
             
             <Button x:Name="button2" Content="Сохранить изображение"
                     Command="{Binding SaveImageCommand}"
-                    Visibility="{Binding ImageViewModel.IsFiltered, Converter={StaticResource BoolToVisibilityConverter}}"
-                    Style="{StaticResource BlackAndWhite}" />
+                    Visibility="{Binding ImageViewModel.IsFiltered, Converter={StaticResource BoolToVisibilityConverter}}"/>
 
             <!-- <Button Content="Сохранить изображение" -->
             <!-- Command="{Binding SaveImageCommand}" -->
@@ -65,8 +63,7 @@
             
             <Button x:Name="button3" Content="Открыть гистаграмму"
                     Command="{Binding OpenHistogramCommand}"
-                    Visibility="{Binding ImageViewModel.IsFiltered, Converter={StaticResource BoolToVisibilityConverter}}"
-                    Style="{StaticResource BlackAndWhite}" />
+                    Visibility="{Binding ImageViewModel.IsFiltered, Converter={StaticResource BoolToVisibilityConverter}}"/>
             
             <!-- <Button Content="Открыть гистаграмму" -->
             <!--         Command="{Binding OpenHistogramCommand}" -->
