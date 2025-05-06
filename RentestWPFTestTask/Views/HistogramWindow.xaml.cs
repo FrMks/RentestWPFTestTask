@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 using OpenCvSharp;
 using RentestWPFTestTask.ViewModels;
 using Point = OpenCvSharp.Point;
@@ -14,7 +16,7 @@ public partial class HistogramWindow : Window
     {
         InitializeComponent();
         DataContext = viewModel;
-        BuildHistogram(viewModel.Image);
+        Loaded += (s, e) =>BuildHistogram(viewModel.Image);
     }
 
     private void BuildHistogram(Mat image)
@@ -24,8 +26,9 @@ public partial class HistogramWindow : Window
             MessageBox.Show("Изображение должно быть в градациях серого для построения гистограммы");
             return;
         }
-    
-        // Параметры гистограммы
+        
+        HistogramCanvas.Children.Clear();
+        
         int histogramSize = 256;
         Rangef histRange = new Rangef(0, 65535);
 
@@ -41,34 +44,31 @@ public partial class HistogramWindow : Window
             ranges: new[] { histRange }
         );
         
-        //histogram.GetArray<float>(out var array);
-    
-        // Нормализуем гистограмму
-        //Cv2.Normalize(histogram, histogram, 0, 100, NormTypes.MinMax);
-
-        //histogram.GetArray<float>(out var array1);
-
+        double maxVal;
+        Cv2.MinMaxLoc(histogram, out _, out maxVal);
         
-        int histWidth = 800;
-        int histHeight = 600;
-        int binWidth = histWidth / histogramSize;
-    
-        Mat histImage = new Mat(histHeight, histWidth, MatType.CV_8UC3, Scalar.All(255));
-    
-        // Рисуем гистограмму
-        for (int i = 1; i < histogramSize; i++)
+        //гарантируем, что все 256 столбцов равномерно заполнят ширину Canvas без перекрытий или пустот
+        double canvasWidth = HistogramCanvas.ActualWidth;
+        double canvasHeight = HistogramCanvas.ActualHeight;
+        double binWidth = canvasWidth / histogramSize;
+
+        for (int i = 0; i < histogramSize; i++)
         {
-            Point pt1 = new Point(binWidth * (i - 1), histHeight - (int)histogram.At<float>(i - 1));
-            Point pt2 = new Point(binWidth * i, histHeight - (int)histogram.At<float>(i));
-            Cv2.Line(histImage, pt1, pt2, new Scalar(0, 0, 0), 2);
+            float binValue = histogram.At<float>(i);
+            double binHeight = (binValue / maxVal) * canvasHeight;
+            Line line = new Line
+            {
+                X1 = i * binWidth,
+                Y1 = canvasHeight,
+                X2 = i * binWidth,
+                Y2 = canvasHeight - binHeight,
+                Stroke = Brushes.Black,
+                StrokeThickness = binWidth,
+                SnapsToDevicePixels = true
+            };
+            
+            HistogramCanvas.Children.Add(line);
         }
-
-        BitmapSource bitmapSource = ConvertMatToBitmapSource(histImage);
-    
-        HistogramImage.Source = bitmapSource;
-
-        histogram.Dispose();
-        histImage.Dispose();
     }
 
     private BitmapSource ConvertMatToBitmapSource(Mat mat)
@@ -87,6 +87,14 @@ public partial class HistogramWindow : Window
             bitmapImage.Freeze();
 
             return bitmapImage;
+        }
+    }
+
+    private void HistogramCanvas_SizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
+    {
+        if (DataContext is HistogramWindowViewModel viewModel && viewModel.Image != null)
+        {
+            BuildHistogram(viewModel.Image);
         }
     }
 }
