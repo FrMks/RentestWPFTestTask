@@ -42,7 +42,7 @@ namespace RentestWPFTestTask.ViewModels
 
         private async void OpenImage(object parameter)
         {
-            var filePath = await _imageDialogService.OpenImageAsync(); // теперь filePath - string
+            var filePath = await _imageDialogService.OpenImageAsync(); 
             if (!string.IsNullOrEmpty(filePath))
             {
                 ImageViewModel.LoadImage(filePath);

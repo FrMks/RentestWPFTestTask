@@ -45,14 +45,18 @@ namespace RentestWPFTestTask.ViewModels
                 {
                     using (var mat = Infrastructure.ImageConverter.ImageConverter.FilePathToMat(_imageViewModel.FilePath))
                     {
+                        _imageViewModel.CurrentMat?.Dispose();
+                        _imageViewModel.CurrentMat = mat.Clone();
                         _imageViewModel.Image = Infrastructure.ImageConverter.ImageConverter.MatToBitmapImage(mat);
                     }
                     _imageViewModel.IsFiltered = false;
                 }
                 else
                 {
-                    var filtered = await _filterService.ApplyFilterAsync(SelectedFilter, _imageViewModel.FilePath);
-                    _imageViewModel.Image = filtered;
+                    var (image, mat) = await _filterService.ApplyFilterAsync(SelectedFilter, _imageViewModel.FilePath);
+                    _imageViewModel.CurrentMat?.Dispose();
+                    _imageViewModel.CurrentMat = mat;
+                    _imageViewModel.Image = image;
                     _imageViewModel.IsFiltered = true;
                 }
             }
@@ -63,8 +67,10 @@ namespace RentestWPFTestTask.ViewModels
             if (string.IsNullOrEmpty(filePath))
                 return;
 
-            var filtered = await _filterService.ApplyFilterAsync(filter, filePath);
-            _imageViewModel.Image = filtered;
+            var (image, mat) = await _filterService.ApplyFilterAsync(filter, filePath);
+            _imageViewModel.CurrentMat?.Dispose();
+            _imageViewModel.CurrentMat = mat;
+            _imageViewModel.Image = image;
             _imageViewModel.IsFiltered = true;
         }
     }

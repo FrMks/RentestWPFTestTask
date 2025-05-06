@@ -9,9 +9,9 @@ namespace RentestWPFTestTask.Services.Filter
 {
     internal class FilterService : IFilterService
     {
-        public async Task<BitmapImage> ApplyFilterAsync(ImageFilter filter, string filePath)
+        public async Task<(BitmapImage, Mat)> ApplyFilterAsync(ImageFilter filter, string filePath)
         {
-            if (string.IsNullOrEmpty(filePath)) return null;
+            if (string.IsNullOrEmpty(filePath)) return (null, null);
 
             using (var mat = ImageConverter.FilePathToMat(filePath))
             {
@@ -30,21 +30,22 @@ namespace RentestWPFTestTask.Services.Filter
                             resultMat = ApplySobelFilter(mat);
                             break;
                         case "none":
-                            return ImageConverter.MatToBitmapImage(mat);
+                            return (ImageConverter.MatToBitmapImage(mat), mat.Clone());
                     }
 
                     if (resultMat != null)
                     {
                         var newImage = ImageConverter.MatToBitmapImage(resultMat);
-                        return newImage;
+                        return (newImage, resultMat);
                     }
                 }
-                finally
+                catch
                 {
                     resultMat?.Dispose();
+                    throw;
                 }
             }
-            return null;
+            return (null, null);
         }
 
         public IEnumerable<ImageFilter> GetAvailableFilters()
