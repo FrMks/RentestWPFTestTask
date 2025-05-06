@@ -6,6 +6,7 @@ using RentestWPFTestTask.Services.Filter;
 using RentestWPFTestTask.Services.SaveImage;
 using RentestWPFTestTask.Services;
 using RentestWPFTestTask.ViewModels.Baze;
+using RentestWPFTestTask.Views;
 
 namespace RentestWPFTestTask.ViewModels
 {
@@ -17,6 +18,8 @@ namespace RentestWPFTestTask.ViewModels
         public FilterViewModel FilterViewModel { get; }
         public ICommand OpenImageCommand { get; }
         public ICommand SaveImageCommand { get; }
+        
+        public ICommand OpenHistogramCommand { get; }
 
         public MainWindowViewModel(
             IImageDialogService imageDialogService,
@@ -31,6 +34,7 @@ namespace RentestWPFTestTask.ViewModels
 
             OpenImageCommand = new LambdaCommand(OpenImage);
             SaveImageCommand = new LambdaCommand(SaveImage, CanSaveImage);
+            OpenHistogramCommand = new LambdaCommand(OpenHistogram);
         }
 
         private async void SaveImage(object parameter)
@@ -49,6 +53,12 @@ namespace RentestWPFTestTask.ViewModels
                 await FilterViewModel.ApplyFilterAsync(new ImageFilter("Оттенки серого", "GRAY"), filePath);
                 FilterViewModel.SelectedFilter = FilterViewModel.AvailableFilters.FirstOrDefault(f => f.Id == "none");
             }
+        }
+
+        private void OpenHistogram(object parameter)
+        {
+            var histogramWindow = new HistogramWindow();
+            histogramWindow.Show();
         }
     }
 }
