@@ -61,6 +61,7 @@ namespace RentestWPFTestTask.Services.Filter
         private Mat ApplyGrayScale(Mat inputImage)
         {
             var outputImage = new Mat();
+            Console.WriteLine($"inputImage.Channels :  {inputImage.Type()}");
             if (inputImage.Channels() == 1)
             {
                 inputImage.CopyTo(outputImage);
@@ -69,6 +70,7 @@ namespace RentestWPFTestTask.Services.Filter
             {
                 Cv2.CvtColor(inputImage, outputImage, ColorConversionCodes.BGR2GRAY);
             }
+            Console.WriteLine($"ApplyGrayScale: outputImage.Type : {outputImage.Type()}");
             return outputImage;
         }
 
@@ -78,24 +80,20 @@ namespace RentestWPFTestTask.Services.Filter
             if (inputImage.Channels() != 1)
             {
                 matForFilter = new Mat();
+                matForFilter.ConvertTo(matForFilter, MatType.CV_16UC1);
                 Cv2.CvtColor(inputImage, matForFilter, ColorConversionCodes.BGR2GRAY);
             }
 
-            if (matForFilter.Depth() != MatType.CV_8U)
-            {
-                Mat tmp = new Mat();
-                Cv2.Normalize(matForFilter, tmp, 0, 255, NormTypes.MinMax);
-                tmp.ConvertTo(tmp, MatType.CV_8U);
-                matForFilter.Dispose();
-                matForFilter = tmp;
-            }
+            
 
             Mat outputImage = new Mat();
-            Cv2.MedianBlur(matForFilter, outputImage, 21);
+            outputImage.ConvertTo(outputImage, MatType.CV_16UC1);
+            Cv2.MedianBlur(matForFilter, outputImage, 5);
 
             if (matForFilter != inputImage)
                 matForFilter.Dispose();
 
+            Console.WriteLine($"ApplyMedianFilter: outputImage.Type :  {outputImage.Type()}");
             return outputImage;
         }
 
@@ -103,19 +101,16 @@ namespace RentestWPFTestTask.Services.Filter
         {
             var matForFilter = ApplyGrayScale(inputImage);
 
-            Mat gradX = new Mat();
-            Mat gradY = new Mat();
+            Mat gradX = new Mat(matForFilter.Height, matForFilter.Width, MatType.CV_16UC1);
+            Mat gradY = new Mat(matForFilter.Height, matForFilter.Width, MatType.CV_16UC1);
 
-            Cv2.Sobel(matForFilter, gradX, MatType.CV_16S, 1, 0, ksize: 3);
-            Cv2.Sobel(matForFilter, gradY, MatType.CV_16S, 0, 1, ksize: 3);
-
-            Mat absGradX = new Mat();
-            Mat absGradY = new Mat();
-            Cv2.ConvertScaleAbs(gradX, absGradX);
-            Cv2.ConvertScaleAbs(gradY, absGradY);
+            Cv2.Sobel(matForFilter, gradX, MatType.CV_16UC1, 1, 0, ksize: 3);
+            Cv2.Sobel(matForFilter, gradY, MatType.CV_16UC1, 0, 1, ksize: 3);
 
             Mat outputImage = new Mat();
-            Cv2.AddWeighted(absGradX, 0.5, absGradY, 0.5, 0, outputImage);
+            Cv2.AddWeighted(gradX, 0.5, gradY, 0.5, 0, outputImage);
+            
+            Console.WriteLine($"ApplySobelFilter: outputImage.Type :  {outputImage.Type()}");
             return outputImage;
         }
     }

@@ -27,7 +27,7 @@ public partial class HistogramWindow : Window
     
         // Параметры гистограммы
         int histogramSize = 256;
-        Rangef histRange = new Rangef(0, 256);
+        Rangef histRange = new Rangef(0, 65535);
 
         // Вычисляем гистограмму
         Mat histogram = new Mat();
@@ -40,10 +40,15 @@ public partial class HistogramWindow : Window
             histSize: new[] { histogramSize },
             ranges: new[] { histRange }
         );
+        
+        //histogram.GetArray<float>(out var array);
     
         // Нормализуем гистограмму
-        Cv2.Normalize(histogram, histogram, 0, 100, NormTypes.MinMax);
-    
+        //Cv2.Normalize(histogram, histogram, 0, 100, NormTypes.MinMax);
+
+        //histogram.GetArray<float>(out var array1);
+
+        
         int histWidth = 800;
         int histHeight = 600;
         int binWidth = histWidth / histogramSize;
