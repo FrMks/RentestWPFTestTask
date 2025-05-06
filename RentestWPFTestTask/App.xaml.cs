@@ -25,9 +25,13 @@ namespace RentestWPFTestTask
             services.AddSingleton<IImageDialogService, ImageDialogService>();
             services.AddSingleton<IFilterService, FilterService>();
             services.AddSingleton<IImageSaveService, ImageSaveService>();
+            
             services.AddTransient<ImageViewModel>();
             services.AddTransient<FilterViewModel>();
             services.AddTransient<MainWindowViewModel>();
+            services.AddTransient<HistogramWindow>();
+            
+            services.AddTransient<HistogramWindowViewModel>();
             services.AddSingleton<MainWindow>();
         }
 

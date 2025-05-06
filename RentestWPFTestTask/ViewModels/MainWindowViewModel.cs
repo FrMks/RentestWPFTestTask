@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Windows.Input;
+using OpenCvSharp;
 using RentestWPFTestTask.Infrastructure.Commands;
 using RentestWPFTestTask.Models;
 using RentestWPFTestTask.Services.Filter;
@@ -57,7 +58,9 @@ namespace RentestWPFTestTask.ViewModels
 
         private void OpenHistogram(object parameter)
         {
-            var histogramWindow = new HistogramWindow();
+            Mat currentImage = ImageViewModel.CurrentMat?.Clone();
+            
+            var histogramWindow = new HistogramWindow(new HistogramWindowViewModel(currentImage));
             histogramWindow.Show();
         }
     }
