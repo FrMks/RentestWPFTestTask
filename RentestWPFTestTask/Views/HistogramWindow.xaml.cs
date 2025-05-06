@@ -19,7 +19,7 @@ public partial class HistogramWindow : Window
         Loaded += (s, e) =>BuildHistogram(viewModel.Image);
     }
 
-    private void BuildHistogram(Mat image)
+    private async void BuildHistogram(Mat image)
     {
         if (image.Channels() != 1)
         {
@@ -33,42 +33,51 @@ public partial class HistogramWindow : Window
         Rangef histRange = new Rangef(0, 65535);
 
         // Вычисляем гистограмму
-        Mat histogram = new Mat();
-        Cv2.CalcHist(
-            images: new[] { image },
-            channels: new[] { 0 },
-            mask: null,
-            hist: histogram,
-            dims: 1,
-            histSize: new[] { histogramSize },
-            ranges: new[] { histRange }
-        );
+        var hist = await Task.Run(() =>
+        {
+            Mat histogram = new Mat();
+            Cv2.CalcHist(
+                images: new[] { image },
+                channels: new[] { 0 },
+                mask: null,
+                hist: histogram,
+                dims: 1,
+                histSize: new[] { histogramSize },
+                ranges: new[] { histRange }
+            );
+            return histogram;
+        });
+        
         
         double maxVal;
-        Cv2.MinMaxLoc(histogram, out _, out maxVal);
+        Cv2.MinMaxLoc(hist, out _, out maxVal);
         
         //гарантируем, что все 256 столбцов равномерно заполнят ширину Canvas без перекрытий или пустот
         double canvasWidth = HistogramCanvas.ActualWidth;
         double canvasHeight = HistogramCanvas.ActualHeight;
         double binWidth = canvasWidth / histogramSize;
 
-        for (int i = 0; i < histogramSize; i++)
+        Application.Current.Dispatcher.BeginInvoke(() =>
         {
-            float binValue = histogram.At<float>(i);
-            double binHeight = (binValue / maxVal) * canvasHeight;
-            Line line = new Line
+            for (int i = 0; i < histogramSize; i++)
             {
-                X1 = i * binWidth,
-                Y1 = canvasHeight,
-                X2 = i * binWidth,
-                Y2 = canvasHeight - binHeight,
-                Stroke = Brushes.Black,
-                StrokeThickness = binWidth,
-                SnapsToDevicePixels = true
-            };
+                float binValue = hist.At<float>(i);
+                double binHeight = (binValue / maxVal) * canvasHeight;
+                Line line = new Line
+                {
+                    X1 = i * binWidth,
+                    Y1 = canvasHeight,
+                    X2 = i * binWidth,
+                    Y2 = canvasHeight - binHeight,
+                    Stroke = Brushes.Black,
+                    StrokeThickness = binWidth,
+                    SnapsToDevicePixels = true
+                };
             
-            HistogramCanvas.Children.Add(line);
-        }
+                HistogramCanvas.Children.Add(line);
+            }    
+        });
+        
     }
 
     private BitmapSource ConvertMatToBitmapSource(Mat mat)

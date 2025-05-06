@@ -9,6 +9,13 @@
 
     <Window.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <Style x:Key="BlackAndWhite">
+            <Setter Property="Control.FontFamily" Value="Verdana"/>
+            <Setter Property="Control.Background" Value="Black"/>
+            <Setter Property="Control.Foreground" Value="White"/>
+            <Setter Property="Control.Padding" Value="20, 10"/>
+            <Setter Property="Control.Margin" Value="10"/>
+        </Style>
     </Window.Resources>
 
     <Grid>
@@ -19,39 +26,54 @@
         </Grid.ColumnDefinitions>
 
         <StackPanel Grid.Column="0" Orientation="Vertical" Margin="10">
-            <Button Content="Выбор изображения"
+            <!-- <Button Content="Выбор изображения" -->
+            <!--         Command="{Binding OpenImageCommand}" -->
+            <!--         HorizontalAlignment="Left" -->
+            <!--         Padding="20 10" -->
+            <!--         Margin="0,0,0,10"/> -->
+            
+            <Button x:Name="button1" Content="Выбор изображения"
                     Command="{Binding OpenImageCommand}"
-                    HorizontalAlignment="Left"
-                    Padding="20 10"
-                    Margin="0,0,0,10"/>
+                    Style="{StaticResource BlackAndWhite}" />
 
             <ComboBox x:Name="FilterComboBox"
                 ItemsSource="{Binding FilterViewModel.AvailableFilters}"
                 SelectedItem="{Binding FilterViewModel.SelectedFilter}"
                 Visibility="{Binding ImageViewModel.HasImage, Converter={StaticResource BoolToVisibilityConverter}}"
                 Width="200"
-                HorizontalAlignment="Left"
-                Margin="0,0,0,10">
+                Padding="20, 10"
+                Margin="10,10,10,10">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Name}"/>
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
-
-            <Button Content="Сохранить изображение"
-                Command="{Binding SaveImageCommand}"
-                Visibility="{Binding ImageViewModel.IsFiltered, Converter={StaticResource BoolToVisibilityConverter}}"
-                HorizontalAlignment="Left"
-                Padding="20 10"
-                Margin="0,0,0,10"/>
             
-            <Button Content="Открыть гистаграмму"
+            
+            <Button x:Name="button2" Content="Сохранить изображение"
+                    Command="{Binding SaveImageCommand}"
+                    Visibility="{Binding ImageViewModel.IsFiltered, Converter={StaticResource BoolToVisibilityConverter}}"
+                    Style="{StaticResource BlackAndWhite}" />
+
+            <!-- <Button Content="Сохранить изображение" -->
+            <!-- Command="{Binding SaveImageCommand}" -->
+            <!-- Visibility="{Binding ImageViewModel.IsFiltered, Converter={StaticResource BoolToVisibilityConverter}}" -->
+            <!--     HorizontalAlignment="Left" -->
+            <!--     Padding="20 10" -->
+            <!--     Margin="0,0,0,10"/> -->
+            
+            <Button x:Name="button3" Content="Открыть гистаграмму"
                     Command="{Binding OpenHistogramCommand}"
                     Visibility="{Binding ImageViewModel.IsFiltered, Converter={StaticResource BoolToVisibilityConverter}}"
-                    HorizontalAlignment="Left"
-                    Padding="20, 10"
-                    Margin="0, 0, 0, 10"/>
+                    Style="{StaticResource BlackAndWhite}" />
+            
+            <!-- <Button Content="Открыть гистаграмму" -->
+            <!--         Command="{Binding OpenHistogramCommand}" -->
+            <!--         Visibility="{Binding ImageViewModel.IsFiltered, Converter={StaticResource BoolToVisibilityConverter}}" -->
+            <!--         HorizontalAlignment="Left" -->
+            <!--         Padding="20, 10" -->
+            <!--         Margin="0, 0, 0, 10"/> -->
 
         </StackPanel>
 
